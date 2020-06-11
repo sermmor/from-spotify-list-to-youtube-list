@@ -1,0 +1,30 @@
+{
+  "name": "from-spotify-list-to-youtube-list",
+  "version": "1.0.0",
+  "description": "Read a Spotify List and automately create a Youtube List based in the Spotify List.",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx tsc && cpy networks.json build && node build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sermmor/from-spotify-list-to-youtube-list.git"
+  },
+  "keywords": [],
+  "author": "Sergio Martín",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sermmor/from-spotify-list-to-youtube-list/issues"
+  },
+  "homepage": "https://github.com/sermmor/from-spotify-list-to-youtube-list#readme",
+  "devDependencies": {
+    "@types/node": "^13.13.5",
+    "cpy-cli": "^3.1.1",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/spotify-web-api-node": "^4.0.1",
+    "googleapis": "^52.1.0",
+    "spotify-web-api-node": "^4.0.0"
+  }
+}
