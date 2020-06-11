@@ -1,6 +1,6 @@
 import { readFile } from 'fs';
 import { getTheSpotifyPlaylist, PlaylistSong, savePlaylistResultInFile, savePlaylistAndUrlsResultInFiles } from './spotify-get-playlist';
-import { youtubePlaylist } from './playlist-youtube';
+import { youtubePlaylist } from './youtube-songs-searcher';
 
 const networksPath = 'build/networks.json';
 let userData: any;
