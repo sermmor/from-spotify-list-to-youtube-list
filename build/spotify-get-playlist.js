@@ -75,7 +75,17 @@ var main = function (callback, offset) {
     });
 };
 exports.savePlaylistResultInFile = function (playlist, callback) {
-    var strAllTuits = JSON.stringify(playlist, null, 2);
-    fs_1.writeFileSync('playlistSongs.json', strAllTuits);
+    var strJson = JSON.stringify(playlist, null, 2);
+    fs_1.writeFileSync('playlistSongs.json', strJson);
+    callback(playlist);
+};
+exports.savePlaylistAndUrlsResultInFiles = function (playlist, callback) {
+    var strJson = JSON.stringify(playlist, null, 2);
+    fs_1.writeFileSync('playlistSongs.json', strJson);
+    var allUrls = playlist.map(function (_a) {
+        var youtubeUrl = _a.youtubeUrl;
+        return youtubeUrl;
+    }).reduce(function (acc, current) { return acc + "\n" + current; });
+    fs_1.writeFileSync('urlsPlaylistSongs.txt', allUrls);
     callback(playlist);
 };

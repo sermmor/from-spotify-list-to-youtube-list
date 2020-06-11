@@ -93,7 +93,17 @@ const main = (callback: (playlist: PlaylistSong[]) => void, offset: number = 0) 
 }
 
 export const savePlaylistResultInFile = (playlist: PlaylistSong[], callback: (playlist: PlaylistSong[]) => void) => {
-    const strAllTuits: string = JSON.stringify(playlist, null, 2);
-    writeFileSync('playlistSongs.json', strAllTuits);
+    const strJson: string = JSON.stringify(playlist, null, 2);
+    writeFileSync('playlistSongs.json', strJson);
+    callback(playlist);
+}
+
+export const savePlaylistAndUrlsResultInFiles = (playlist: PlaylistSong[], callback: (playlist: PlaylistSong[]) => void) => {
+    const strJson: string = JSON.stringify(playlist, null, 2);
+    writeFileSync('playlistSongs.json', strJson);
+
+    let allUrls = playlist.map(({ youtubeUrl }) => youtubeUrl).reduce((acc, current) => `${acc}\n${current}`);
+    writeFileSync('urlsPlaylistSongs.txt', allUrls);
+
     callback(playlist);
 }
