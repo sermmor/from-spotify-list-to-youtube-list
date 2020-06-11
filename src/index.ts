@@ -14,38 +14,47 @@ readFile(networksPath, (err, data) => {
     getTheSpotifyPlaylist(userData, (playlist: PlaylistSong[]) => {
         youtubePlaylist(userData, playlist, (playlistCompleted: PlaylistSong[]) => {
             savePlaylistAndUrlsResultInFiles(playlistCompleted, playlistSaved => {
-                console.log(playlist);
+                // console.log(playlist);
             });
         });
     });
-    
-    // youtubePlaylist(userData,
-    //     [
-    //         {
-    //             "position": 0,
-    //             "toSearch": "Joan Jett & The Blackhearts Shout",
-    //             "youtubeUrl": '',
-    //         },
-    //         {
-    //           "position": 1,
-    //           "toSearch": "The Sonics Have Love Will Travel",
-    //           "youtubeUrl": '',
-    //         },
-    //         {
-    //           "position": 107,
-    //           "toSearch": "Gyroscope Baby, I’m Gettin’ Better",
-    //           "youtubeUrl": ""
-    //         },
-    //         {
-    //           "position": 2,
-    //           "toSearch": "Queen Tutti Frutti - Live At Wembley Stadium / July 1986",
-    //           "youtubeUrl": '',
-    //         },
-    //     ],
-    //     (playlist: PlaylistSong[]) => {
-    //         // savePlaylistAndUrlsResultInFiles(playlist, playlistSaved => {
-    //             console.log(playlist);
-    //         // });
-    //     }
-    // );
+
+    // test();
 });
+
+const test = () => {
+    youtubePlaylist(userData,
+        [
+            {
+                "position": 0,
+                "toSearch": "Joan Jett & The Blackhearts Shout",
+                "youtubeUrl": '',
+            },
+            {
+              "position": 1,
+              "toSearch": "The Sonics Have Love Will Travel",
+              "youtubeUrl": '',
+            },
+            {
+              "position": 107,
+              "toSearch": "Gyroscope Baby, I’m Gettin’ Better",
+              "youtubeUrl": ""
+            },
+            {
+              "position": 2,
+              "toSearch": "Queen Tutti Frutti - Live At Wembley Stadium / July 1986",
+              "youtubeUrl": '',
+            },
+            {
+              "position": 132,
+              "toSearch": "Run–D.M.C. Rock Box",
+              "youtubeUrl": ""
+            },
+        ],
+        (playlist: PlaylistSong[]) => {
+            // savePlaylistAndUrlsResultInFiles(playlist, playlistSaved => {
+                console.log(playlist);
+            // });
+        }
+    );
+}

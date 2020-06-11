@@ -91,7 +91,7 @@ var formatWordQuery = function (word) {
         .replace(/ò/gi, "o").replace(/ù/gi, "u").replace(/ä/gi, "a").replace(/ë/gi, "e").replace(/ï/gi, "i")
         .replace(/ö/gi, "o").replace(/ü/gi, "u").replace(/â/gi, "a").replace(/ê/gi, "e").replace(/î/gi, "i")
         .replace(/ô/gi, "o").replace(/û/gi, "u").replace(/’/g, "").replace(/:/g, "+").replace(/{/g, "")
-        .replace(/}/g, "").replace(/,/g, "+").replace(/;/g, "+");
+        .replace(/}/g, "").replace(/,/g, "+").replace(/;/g, "+").replace(/–/g, "+");
     return simplifySeparatorBetweenQueryWords(replaceAll(replaceAll(replaceAll(replaceAll(replaceAll(replaceAll(firstReplace, "/", "+"), "(", ""), "[", ""), ")", ""), "]", ""), ".", "+"));
 };
 var replaceAll = function (word, toReplace, toPut) {
