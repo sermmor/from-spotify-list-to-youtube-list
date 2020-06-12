@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs_1 = require("fs");
 var spotify_get_playlist_1 = require("./spotify-get-playlist");
-var playlist_youtube_1 = require("./playlist-youtube");
+var youtube_songs_searcher_1 = require("./youtube-songs-searcher");
 var networksPath = 'build/networks.json';
 var userData;
 console.log("Application begins...");
@@ -11,7 +11,7 @@ fs_1.readFile(networksPath, function (err, data) {
         throw err;
     userData = JSON.parse(data);
     spotify_get_playlist_1.getTheSpotifyPlaylist(userData, function (playlist) {
-        playlist_youtube_1.youtubePlaylist(userData, playlist, function (playlistCompleted) {
+        youtube_songs_searcher_1.youtubePlaylist(userData, playlist, function (playlistCompleted) {
             spotify_get_playlist_1.savePlaylistAndUrlsResultInFiles(playlistCompleted, function (playlistSaved) {
                 // console.log(playlist);
             });
@@ -20,7 +20,7 @@ fs_1.readFile(networksPath, function (err, data) {
     // test();
 });
 var test = function () {
-    playlist_youtube_1.youtubePlaylist(userData, [
+    youtube_songs_searcher_1.youtubePlaylist(userData, [
         {
             "position": 0,
             "toSearch": "Joan Jett & The Blackhearts Shout",

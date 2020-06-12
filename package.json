@@ -4,7 +4,8 @@
   "description": "Read a Spotify List and automately create a Youtube List based in the Spotify List.",
   "main": "index.js",
   "scripts": {
-    "start": "npx tsc && cpy networks.json build && node build/index.js"
+    "start": "npx tsc && cpy networks.json build && node build/index.js",
+    "start:place": "npx tsc && cpy networks.json build && node build/utils/place-videos-and-music.js"
   },
   "repository": {
     "type": "git",
