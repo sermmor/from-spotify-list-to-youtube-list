@@ -10,16 +10,19 @@ var userData;
 var directorySongNames;
 var playList;
 var fromDirectoryToPlaylistSong;
-var debugLog = function (contentToLog) {
+var debugLog = function (contentToLog, saveInLogFile) {
+    if (saveInLogFile === void 0) { saveInLogFile = false; }
     console.log(contentToLog);
-    var nameLogFile = 'debugLog.txt';
-    fs_1.readFile(nameLogFile, function (err, data) {
-        var newData = data ? data + "\n" + contentToLog : "" + contentToLog;
-        fs_1.writeFile(nameLogFile, newData, function () {
-            // Saved.
-            // console.log(contentToLog);
+    if (saveInLogFile) {
+        var nameLogFile_1 = 'debugLog.txt';
+        fs_1.readFile(nameLogFile_1, function (err, data) {
+            var newData = data ? data + "\n" + contentToLog : "" + contentToLog;
+            fs_1.writeFile(nameLogFile_1, newData, function () {
+                // Saved.
+                // console.log(contentToLog);
+            });
         });
-    });
+    }
 };
 debugLog("Copy begins...");
 fs_1.readFile(networksPath, function (err, data) {
@@ -37,7 +40,7 @@ fs_1.readFile(networksPath, function (err, data) {
             if (err)
                 throw err;
             playList = JSON.parse(data);
-            // testMapper(); // TODO: DELETE THIS LINE, ONLY FOR TEST.
+            // testMapper(); // ONLY ENABLE THIS FOR DO SOME TEST.
             relateDirectoriesWithSongs(extractVideoMusicAndSubtitles);
         });
     });
@@ -108,8 +111,10 @@ var setYoutubeNameSong = function (song, onRelatedFinished, indexSong) {
             repeatCallingToYoutube(song, onRelatedFinished, indexSong);
             return;
         }
-        debugLog("Getted song '" + song.toSearch + "'");
-        fromDirectoryToPlaylistSong[clearNotAllowedCharacters(videoTitle)] = song;
+        videoTitle = clearNotAllowedCharacters(videoTitle);
+        // debugLog(`Getted song \'${videoTitle}\'`, true);
+        debugLog("Getted song '" + videoTitle + "'");
+        fromDirectoryToPlaylistSong[videoTitle] = song;
         if (indexSong + 1 >= playList.length) {
             onRelatedFinished();
         }
@@ -145,10 +150,12 @@ var extractTitle = function (contentHTML) {
 };
 var clearNotAllowedCharacters = function (strWithRareCharacters) {
     if (userData["useWindowsFileFilter"]) {
-        var notAllowedCharacters = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
+        var notAllowedCharacters = ['\\', '/', ':', '*', '?', '\"', '<', '>', '|'];
         var toPut_1 = "_";
         var finalStr_1 = strWithRareCharacters;
+        finalStr_1 = fixAllRareHTMLSymbols(finalStr_1);
         notAllowedCharacters.forEach(function (c) { return finalStr_1 = replaceAll(finalStr_1, c, toPut_1); });
+        finalStr_1 = replaceAll(finalStr_1, '.', " ");
         return finalStr_1;
     }
     else {
@@ -157,6 +164,101 @@ var clearNotAllowedCharacters = function (strWithRareCharacters) {
 };
 var replaceAll = function (word, toReplace, toPut) {
     return word.split(toReplace).join(toPut);
+};
+var fixAllRareHTMLSymbols = function (word) {
+    var finalWord = unescape(word);
+    finalWord = replaceAll(finalWord, '&#33;', "!");
+    finalWord = replaceAll(finalWord, '&#34;', "\"");
+    finalWord = replaceAll(finalWord, '&quot;', "\"");
+    finalWord = replaceAll(finalWord, '&#35;', "#");
+    finalWord = replaceAll(finalWord, '&#36;', "$");
+    finalWord = replaceAll(finalWord, '&#37;', "%");
+    finalWord = replaceAll(finalWord, '&#38;', "&");
+    finalWord = replaceAll(finalWord, '&amp;', "&");
+    finalWord = replaceAll(finalWord, '&#39;', "\'");
+    finalWord = replaceAll(finalWord, '&#40;', "(");
+    finalWord = replaceAll(finalWord, '&#41;', ")");
+    finalWord = replaceAll(finalWord, '&#42;', "*");
+    finalWord = replaceAll(finalWord, '&#43;', "+");
+    finalWord = replaceAll(finalWord, '&#44;', ",");
+    finalWord = replaceAll(finalWord, '&#45;', "-");
+    finalWord = replaceAll(finalWord, '&#46;', ".");
+    finalWord = replaceAll(finalWord, '&#47;', "/");
+    finalWord = replaceAll(finalWord, '&frasl;', "/");
+    finalWord = replaceAll(finalWord, '&#58;', ":");
+    finalWord = replaceAll(finalWord, '&#59;', ";");
+    finalWord = replaceAll(finalWord, '&#60;', "<");
+    finalWord = replaceAll(finalWord, '&lt;', "<");
+    finalWord = replaceAll(finalWord, '&#61;', "=");
+    finalWord = replaceAll(finalWord, '&#62;', ">");
+    finalWord = replaceAll(finalWord, '&gt;', ">");
+    finalWord = replaceAll(finalWord, '&#63;', "?");
+    finalWord = replaceAll(finalWord, '&#191;', "¿");
+    finalWord = replaceAll(finalWord, '&iquest;', "¿");
+    finalWord = replaceAll(finalWord, '&#64;', "@");
+    finalWord = replaceAll(finalWord, '&#91;', "[");
+    finalWord = replaceAll(finalWord, '&#92;', "\\");
+    finalWord = replaceAll(finalWord, '&bsol;', "\\");
+    finalWord = replaceAll(finalWord, '&#93;', "]");
+    finalWord = replaceAll(finalWord, '&#94;', "^");
+    finalWord = replaceAll(finalWord, '&#95;', "_");
+    finalWord = replaceAll(finalWord, '&#123;', "{");
+    finalWord = replaceAll(finalWord, '&#124;', "|");
+    finalWord = replaceAll(finalWord, '&#125;', "}");
+    finalWord = replaceAll(finalWord, '&#126;', "~");
+    finalWord = replaceAll(finalWord, '&Aacute;', "Á");
+    finalWord = replaceAll(finalWord, '&Eacute;', "É");
+    finalWord = replaceAll(finalWord, '&Iacute;', "Í");
+    finalWord = replaceAll(finalWord, '&Oacute;', "Ó");
+    finalWord = replaceAll(finalWord, '&Uacute;', "Ú");
+    finalWord = replaceAll(finalWord, '&aacute;', "á");
+    finalWord = replaceAll(finalWord, '&eacute;', "é");
+    finalWord = replaceAll(finalWord, '&iacute;', "í");
+    finalWord = replaceAll(finalWord, '&oacute;', "ó");
+    finalWord = replaceAll(finalWord, '&uacute;', "ú");
+    finalWord = replaceAll(finalWord, '&#193;', "Á");
+    finalWord = replaceAll(finalWord, '&#201;', "É");
+    finalWord = replaceAll(finalWord, '&#205;', "Í");
+    finalWord = replaceAll(finalWord, '&#211;', "Ó");
+    finalWord = replaceAll(finalWord, '&#218;', "Ú");
+    finalWord = replaceAll(finalWord, '&#225;', "á");
+    finalWord = replaceAll(finalWord, '&#233;', "é");
+    finalWord = replaceAll(finalWord, '&#237;', "í");
+    finalWord = replaceAll(finalWord, '&#243;', "ó");
+    finalWord = replaceAll(finalWord, '&#250;', "ú");
+    finalWord = replaceAll(finalWord, '&Ccedil;', "Ç");
+    finalWord = replaceAll(finalWord, '&#199;', "Ç");
+    finalWord = replaceAll(finalWord, '&ccedil;', "ç");
+    finalWord = replaceAll(finalWord, '&#231;', "ç");
+    finalWord = replaceAll(finalWord, '&Ntilde;', "Ñ");
+    finalWord = replaceAll(finalWord, '&#209;', "Ñ");
+    finalWord = replaceAll(finalWord, '&ntilde;', "ñ");
+    finalWord = replaceAll(finalWord, '&#241;', "ñ");
+    finalWord = replaceAll(finalWord, '&curren;', "¤");
+    finalWord = replaceAll(finalWord, '&#164;', "¤");
+    finalWord = replaceAll(finalWord, '&brvbar;', "¦");
+    finalWord = replaceAll(finalWord, '&#166;', "¦");
+    finalWord = replaceAll(finalWord, '&copy;', "©");
+    finalWord = replaceAll(finalWord, '&#169;', "©");
+    finalWord = replaceAll(finalWord, '&laquo;', "«");
+    finalWord = replaceAll(finalWord, '&#171;', "«");
+    finalWord = replaceAll(finalWord, '&raquo;', "»");
+    finalWord = replaceAll(finalWord, '&#187;', "»");
+    finalWord = replaceAll(finalWord, '&minus;', "−");
+    finalWord = replaceAll(finalWord, '&#8722;', "−");
+    finalWord = replaceAll(finalWord, '&ndash;', "–");
+    finalWord = replaceAll(finalWord, '&#8211;', "–");
+    finalWord = replaceAll(finalWord, '&mdash;', "—");
+    finalWord = replaceAll(finalWord, '&#8212;', "—");
+    finalWord = replaceAll(finalWord, '&lsquo;', "‘");
+    finalWord = replaceAll(finalWord, '&#145;', "‘");
+    finalWord = replaceAll(finalWord, '&rsquo;', "’");
+    finalWord = replaceAll(finalWord, '&#146;', "’");
+    finalWord = replaceAll(finalWord, '&ldquo;', "“");
+    finalWord = replaceAll(finalWord, '&#147;', "“");
+    finalWord = replaceAll(finalWord, '&rdquo;', "”");
+    finalWord = replaceAll(finalWord, '&#148;', "”");
+    return finalWord;
 };
 // ********************************************************************************
 // ****************************** FOR TESTING!! ***********************************

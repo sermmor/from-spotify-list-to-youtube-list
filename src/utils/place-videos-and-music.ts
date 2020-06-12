@@ -14,16 +14,18 @@ let fromDirectoryToPlaylistSong: {
     [key: string]: PlaylistSong;
 };
 
-const debugLog = (contentToLog: any) => {
+const debugLog = (contentToLog: any, saveInLogFile = false) => {
     console.log(contentToLog);
-    const nameLogFile = 'debugLog.txt';
-    readFile(nameLogFile, (err, data) => {
-        const newData = data ? `${data}\n${contentToLog}` : `${contentToLog}`;
-        writeFile(nameLogFile, newData, () => {
-            // Saved.
-            // console.log(contentToLog);
+    if (saveInLogFile) {
+        const nameLogFile = 'debugLog.txt';
+        readFile(nameLogFile, (err, data) => {
+            const newData = data ? `${data}\n${contentToLog}` : `${contentToLog}`;
+            writeFile(nameLogFile, newData, () => {
+                // Saved.
+                // console.log(contentToLog);
+            });
         });
-    })
+    }
 }
 
 debugLog("Copy begins...");
@@ -119,13 +121,15 @@ const setYoutubeNameSong = (song: PlaylistSong, onRelatedFinished: () => void, i
         .then((response: any) => {
             return response.text();
         }).then((response: any) => {
-            const videoTitle = extractTitle(<string> response);
+            let videoTitle = extractTitle(<string> response);
             if (!videoTitle) {
                 repeatCallingToYoutube(song, onRelatedFinished, indexSong);
                 return;
             }
-            debugLog(`Getted song \'${song.toSearch}\'`);
-            fromDirectoryToPlaylistSong[clearNotAllowedCharacters(videoTitle)] = song;
+            videoTitle = clearNotAllowedCharacters(videoTitle);
+            // debugLog(`Getted song \'${videoTitle}\'`, true);
+            debugLog(`Getted song \'${videoTitle}\'`);
+            fromDirectoryToPlaylistSong[videoTitle] = song;
 
             if (indexSong + 1 >= playList.length) {
                 onRelatedFinished();
@@ -170,10 +174,12 @@ const extractTitle = (contentHTML: string): string | undefined => {
 
 const clearNotAllowedCharacters = (strWithRareCharacters: string) => {
     if (userData["useWindowsFileFilter"]) {
-        const notAllowedCharacters = ['\\', '/', ':', '*', '?', '"', '<', '>', '|'];
+        const notAllowedCharacters = ['\\', '/', ':', '*', '?', '\"', '<', '>', '|'];
         const toPut = "_";
         let finalStr = strWithRareCharacters;
+        finalStr = fixAllRareHTMLSymbols(finalStr);
         notAllowedCharacters.forEach(c => finalStr = replaceAll(finalStr, c, toPut));
+        finalStr = replaceAll(finalStr, '.', " ");
         return finalStr;
     } else {
         return strWithRareCharacters;
@@ -182,6 +188,102 @@ const clearNotAllowedCharacters = (strWithRareCharacters: string) => {
 
 const replaceAll = (word: string, toReplace: string, toPut: string): string => {
     return word.split(toReplace).join(toPut);
+}
+
+const fixAllRareHTMLSymbols = (word: string): string => {
+    let finalWord = unescape(word);
+    finalWord = replaceAll(finalWord, '&#33;', "!");
+    finalWord = replaceAll(finalWord, '&#34;', "\"");
+    finalWord = replaceAll(finalWord, '&quot;', "\"");
+    finalWord = replaceAll(finalWord, '&#35;', "#");
+    finalWord = replaceAll(finalWord, '&#36;', "$");
+    finalWord = replaceAll(finalWord, '&#37;', "%");
+    finalWord = replaceAll(finalWord, '&#38;', "&");
+    finalWord = replaceAll(finalWord, '&amp;', "&");
+    finalWord = replaceAll(finalWord, '&#39;', "\'");
+    finalWord = replaceAll(finalWord, '&#40;', "(");
+    finalWord = replaceAll(finalWord, '&#41;', ")");
+    finalWord = replaceAll(finalWord, '&#42;', "*");
+    finalWord = replaceAll(finalWord, '&#43;', "+");
+    finalWord = replaceAll(finalWord, '&#44;', ",");
+    finalWord = replaceAll(finalWord, '&#45;', "-");
+    finalWord = replaceAll(finalWord, '&#46;', ".");
+    finalWord = replaceAll(finalWord, '&#47;', "/");
+    finalWord = replaceAll(finalWord, '&frasl;', "/");
+    finalWord = replaceAll(finalWord, '&#58;', ":");
+    finalWord = replaceAll(finalWord, '&#59;', ";");
+    finalWord = replaceAll(finalWord, '&#60;', "<");
+    finalWord = replaceAll(finalWord, '&lt;', "<");
+    finalWord = replaceAll(finalWord, '&#61;', "=");
+    finalWord = replaceAll(finalWord, '&#62;', ">");
+    finalWord = replaceAll(finalWord, '&gt;', ">");
+    finalWord = replaceAll(finalWord, '&#63;', "?");
+    finalWord = replaceAll(finalWord, '&#191;', "¿");
+    finalWord = replaceAll(finalWord, '&iquest;', "¿");
+    finalWord = replaceAll(finalWord, '&#64;', "@");
+    finalWord = replaceAll(finalWord, '&#91;', "[");
+    finalWord = replaceAll(finalWord, '&#92;', "\\");
+    finalWord = replaceAll(finalWord, '&bsol;', "\\");
+    finalWord = replaceAll(finalWord, '&#93;', "]");
+    finalWord = replaceAll(finalWord, '&#94;', "^");
+    finalWord = replaceAll(finalWord, '&#95;', "_");
+    finalWord = replaceAll(finalWord, '&#123;', "{");
+    finalWord = replaceAll(finalWord, '&#124;', "|");
+    finalWord = replaceAll(finalWord, '&#125;', "}");
+    finalWord = replaceAll(finalWord, '&#126;', "~");
+    finalWord = replaceAll(finalWord, '&Aacute;', "Á");
+    finalWord = replaceAll(finalWord, '&Eacute;', "É");
+    finalWord = replaceAll(finalWord, '&Iacute;', "Í");
+    finalWord = replaceAll(finalWord, '&Oacute;', "Ó");
+    finalWord = replaceAll(finalWord, '&Uacute;', "Ú");
+    finalWord = replaceAll(finalWord, '&aacute;', "á");
+    finalWord = replaceAll(finalWord, '&eacute;', "é");
+    finalWord = replaceAll(finalWord, '&iacute;', "í");
+    finalWord = replaceAll(finalWord, '&oacute;', "ó");
+    finalWord = replaceAll(finalWord, '&uacute;', "ú");
+    finalWord = replaceAll(finalWord, '&#193;', "Á");
+    finalWord = replaceAll(finalWord, '&#201;', "É");
+    finalWord = replaceAll(finalWord, '&#205;', "Í");
+    finalWord = replaceAll(finalWord, '&#211;', "Ó");
+    finalWord = replaceAll(finalWord, '&#218;', "Ú");
+    finalWord = replaceAll(finalWord, '&#225;', "á");
+    finalWord = replaceAll(finalWord, '&#233;', "é");
+    finalWord = replaceAll(finalWord, '&#237;', "í");
+    finalWord = replaceAll(finalWord, '&#243;', "ó");
+    finalWord = replaceAll(finalWord, '&#250;', "ú");
+    finalWord = replaceAll(finalWord, '&Ccedil;', "Ç");
+    finalWord = replaceAll(finalWord, '&#199;', "Ç");
+    finalWord = replaceAll(finalWord, '&ccedil;', "ç");
+    finalWord = replaceAll(finalWord, '&#231;', "ç");
+    finalWord = replaceAll(finalWord, '&Ntilde;', "Ñ");
+    finalWord = replaceAll(finalWord, '&#209;', "Ñ");
+    finalWord = replaceAll(finalWord, '&ntilde;', "ñ");
+    finalWord = replaceAll(finalWord, '&#241;', "ñ");
+    finalWord = replaceAll(finalWord, '&curren;', "¤");
+    finalWord = replaceAll(finalWord, '&#164;', "¤");
+    finalWord = replaceAll(finalWord, '&brvbar;', "¦");
+    finalWord = replaceAll(finalWord, '&#166;', "¦");
+    finalWord = replaceAll(finalWord, '&copy;', "©");
+    finalWord = replaceAll(finalWord, '&#169;', "©");
+    finalWord = replaceAll(finalWord, '&laquo;', "«");
+    finalWord = replaceAll(finalWord, '&#171;', "«");
+    finalWord = replaceAll(finalWord, '&raquo;', "»");
+    finalWord = replaceAll(finalWord, '&#187;', "»");
+    finalWord = replaceAll(finalWord, '&minus;', "−");
+    finalWord = replaceAll(finalWord, '&#8722;', "−");
+    finalWord = replaceAll(finalWord, '&ndash;', "–");
+    finalWord = replaceAll(finalWord, '&#8211;', "–");
+    finalWord = replaceAll(finalWord, '&mdash;', "—");
+    finalWord = replaceAll(finalWord, '&#8212;', "—");
+    finalWord = replaceAll(finalWord, '&lsquo;', "‘");
+    finalWord = replaceAll(finalWord, '&#145;', "‘");
+    finalWord = replaceAll(finalWord, '&rsquo;', "’");
+    finalWord = replaceAll(finalWord, '&#146;', "’");
+    finalWord = replaceAll(finalWord, '&ldquo;', "“");
+    finalWord = replaceAll(finalWord, '&#147;', "“");
+    finalWord = replaceAll(finalWord, '&rdquo;', "”");
+    finalWord = replaceAll(finalWord, '&#148;', "”");
+    return finalWord;
 }
 
 // ********************************************************************************
