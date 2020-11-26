@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "npx tsc && cpy networks.json build && node build/index.js",
-    "start:place": "npx tsc && cpy networks.json build && node build/utils/place-videos-and-music.js"
+    "start:place": "npx tsc && cpy networks.json build && node build/utils/place-videos-and-music.js",
+    "start:copyorder": "npx tsc && cpy networks.json build && node build/utils/copy-files-in-order.js"
   },
   "repository": {
     "type": "git",
