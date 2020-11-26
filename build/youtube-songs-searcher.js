@@ -21,6 +21,7 @@ exports.youtubePlaylist = function (userData, playlist, callback) {
     // }
 };
 var keyUrlGetter = 'href="/watch?';
+var keyUrlGetter_secondTry = '"videoId":"';
 var genericUrlYoutubeVideo = "https://www.youtube.com/watch?"; //"https://www.youtube.com/watch?v=";
 var againstPlaylistSearches = "&sp=EgIQAQ%253D%253D";
 var searchInYoutube = function (playlist, callback, index) {
@@ -33,8 +34,11 @@ var searchInYoutube = function (playlist, callback, index) {
     }).then(function (response) {
         var keyIdUrlVideo = getYoutubeIdKeyOfFirstVideoResult(response);
         if (!keyIdUrlVideo) {
-            repeatCallingToYoutube(playlist, callback, index);
-            return;
+            keyIdUrlVideo = getYoutubeIdKeyOfFirstVideoResult_secondTry(response);
+            if (!keyIdUrlVideo) {
+                repeatCallingToYoutube(playlist, callback, index);
+                return;
+            }
         }
         playlist[index].youtubeUrl = "" + genericUrlYoutubeVideo + keyIdUrlVideo;
         console.log("Searched " + queryToSearch + ": " + playlist[index].youtubeUrl);
@@ -60,6 +64,22 @@ var getYoutubeIdKeyOfFirstVideoResult = function (response) {
         }
     }
     return idKeyVideo;
+};
+var getYoutubeIdKeyOfFirstVideoResult_secondTry = function (response) {
+    var idKeyVideo = undefined;
+    if (response && response.split) {
+        var keyBegins = response.split(keyUrlGetter_secondTry);
+        if (keyBegins) {
+            keyBegins = keyBegins[1];
+            if (keyBegins) {
+                keyBegins = keyBegins.split('"');
+                if (keyBegins) {
+                    idKeyVideo = keyBegins[0];
+                }
+            }
+        }
+    }
+    return "v=" + idKeyVideo;
 };
 var repeatCallingToYoutube = function (playlist, callback, index) {
     if (index === void 0) { index = 0; }

@@ -31,6 +31,7 @@ export const youtubePlaylist = (userData: any, playlist: PlaylistSong[], callbac
 }
 
 const keyUrlGetter = 'href="/watch?';
+const keyUrlGetter_secondTry = '"videoId":"';
 const genericUrlYoutubeVideo = "https://www.youtube.com/watch?";//"https://www.youtube.com/watch?v=";
 const againstPlaylistSearches = "&sp=EgIQAQ%253D%253D";
 
@@ -41,25 +42,28 @@ const searchInYoutube = (
 ) => {
     const queryToSearch = formatQuery(playlist[index].toSearch);
     fetch(`https://www.youtube.com/results?search_query=${queryToSearch}${againstPlaylistSearches}`)
-        .then((response: any) => {
-            // console.log(response);
-            return response.text();
-        }).then((response: any) => {
-            const keyIdUrlVideo = getYoutubeIdKeyOfFirstVideoResult(<string> response);
+    .then((response: any) => {
+        // console.log(response);
+        return response.text();
+    }).then((response: any) => {
+        let keyIdUrlVideo = getYoutubeIdKeyOfFirstVideoResult(<string> response);
+        if (!keyIdUrlVideo) {
+            keyIdUrlVideo = getYoutubeIdKeyOfFirstVideoResult_secondTry(<string> response);
             if (!keyIdUrlVideo) {
                 repeatCallingToYoutube(playlist, callback, index);
                 return;
             }
-            playlist[index].youtubeUrl = `${genericUrlYoutubeVideo}${keyIdUrlVideo}`;
+        }
+        playlist[index].youtubeUrl = `${genericUrlYoutubeVideo}${keyIdUrlVideo}`;
 
-            console.log(`Searched ${queryToSearch}: ${playlist[index].youtubeUrl}`);
+        console.log(`Searched ${queryToSearch}: ${playlist[index].youtubeUrl}`);
 
-            callToYoutubeNextSongInPlaylist(playlist, callback, index);
-        }).catch((error: any) => {
-            console.log(`ERROR: INCORRECT query ${queryToSearch}.`);
-            playlist[index].youtubeUrl = `ERROR WITH QUERY \'${queryToSearch}\'`;
-            callToYoutubeNextSongInPlaylist(playlist, callback, index);
-        });
+        callToYoutubeNextSongInPlaylist(playlist, callback, index);
+    }).catch((error: any) => {
+        console.log(`ERROR: INCORRECT query ${queryToSearch}.`);
+        playlist[index].youtubeUrl = `ERROR WITH QUERY \'${queryToSearch}\'`;
+        callToYoutubeNextSongInPlaylist(playlist, callback, index);
+    });
 }
 
 const getYoutubeIdKeyOfFirstVideoResult = (response: string): string | undefined => {
@@ -77,6 +81,23 @@ const getYoutubeIdKeyOfFirstVideoResult = (response: string): string | undefined
         }
     }
     return idKeyVideo;
+}
+
+const getYoutubeIdKeyOfFirstVideoResult_secondTry = (response: string): string | undefined => {
+    let idKeyVideo = undefined;
+    if (response && response.split) {
+        let keyBegins: string[] | string = response.split(keyUrlGetter_secondTry);
+        if (keyBegins) {
+            keyBegins = keyBegins[1];
+            if (keyBegins) {
+                keyBegins = keyBegins.split('"');
+                if (keyBegins) {
+                    idKeyVideo = keyBegins[0];
+                }
+            }
+        }
+    }
+    return `v=${idKeyVideo}`;
 }
 
 const repeatCallingToYoutube = (
